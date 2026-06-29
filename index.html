@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LexiTrie – Smart Dictionary & Autocomplete System</title>
+    <meta name="description" content="A professional Trie-based dictionary & autocomplete platform designed for instant word lookups and prefix searching. Ready for C++ integration.">
+    <link rel="stylesheet" href="style.css">
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Sidebar Overlay for Mobile Nav -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="brand-section">
+                <div class="brand-logo">LT</div>
+                <div class="brand-info">
+                    <span class="brand-name">LexiTrie</span>
+                    <span class="brand-tagline">Smart Dictionary & Autocomplete</span>
+                </div>
+            </div>
+
+            <ul class="navigation-menu">
+                <li class="nav-item">
+                    <button class="nav-link active" data-page="dashboard" id="navDashboard">
+                        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg>
+                        Dashboard
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-page="search" id="navSearch">
+                        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        Search Dictionary
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-page="manager" id="navManager">
+                        <svg viewBox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                        Dictionary Manager
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-page="history" id="navHistory">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        Search History
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-page="statistics" id="navStatistics">
+                        <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                        Statistics
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-page="about" id="navAbout">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                        About Project
+                    </button>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="status-indicator">
+                    <span class="status-dot" id="connectionDot"></span>
+                    <span id="connectionLabel">Simulated Trie Active</span>
+                </div>
+                <button class="btn btn-secondary btn-sm" id="btnConfigureBackend" style="width: 100%; margin-top: 10px; font-size: 11px;">
+                    Connection Settings
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <div class="main-wrapper">
+            <!-- Top Header Bar -->
+            <header class="top-navbar">
+                <button class="hamburger-btn" id="btnHamburger" aria-label="Toggle Navigation Menu">
+                    <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                </button>
+                <div class="page-header">
+                    <h2 class="page-subtitle" id="navBreadcrumb">Console</h2>
+                    <h1 class="page-title" id="pageHeaderTitle">Dashboard</h1>
+                </div>
+                <div class="user-profile">
+                    <span class="demo-badge">Local Database</span>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <main class="content-container">
+
+                <!-- 1. DASHBOARD PAGE -->
+                <section class="page-section active" id="page-dashboard">
+                    <!-- Welcome Hero Banner -->
+                    <div class="welcome-card">
+                        <h2 class="welcome-title">Welcome to LexiTrie</h2>
+                        <p class="welcome-desc">LexiTrie is a dictionary management and autocomplete system. Use the navigation sidebar to query words, view statistics, or manage dictionary entries.</p>
+                    </div>
+
+                    <!-- Statistics Cards Grid -->
+                    <div class="grid-4">
+                        <div class="stat-card" id="cardStatWords">
+                            <div class="stat-icon">
+                                <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                            </div>
+                            <span class="stat-value" id="statWordsCount">-</span>
+                            <span class="stat-label">Total Words</span>
+                        </div>
+                        <div class="stat-card" id="cardStatSearches">
+                            <div class="stat-icon">
+                                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            </div>
+                            <span class="stat-value" id="statSearchesCount">-</span>
+                            <span class="stat-label">Total Searches</span>
+                        </div>
+                        <div class="stat-card" id="cardStatPopular">
+                            <div class="stat-icon">
+                                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                            </div>
+                            <span class="stat-value" id="statPopularWord" style="font-size: 18px; text-transform: capitalize;">-</span>
+                            <span class="stat-label">Most Searched</span>
+                        </div>
+                        <div class="stat-card" id="cardStatStatus">
+                            <div class="stat-icon" id="statStatusIcon">
+                                <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                            </div>
+                            <span class="stat-value" id="statBackendStatus" style="font-size: 18px;">Active</span>
+                            <span class="stat-label">System State</span>
+                        </div>
+                    </div>
+
+                    <!-- Split Layout: Recent Searches + Quick Actions -->
+                    <div class="grid-sidebar-layout">
+                        <!-- Recent History -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                    Recent Search Activity
+                                </h3>
+                                <button class="btn btn-secondary btn-sm" id="btnDashboardViewAllHistory">View All</button>
+                            </div>
+                            
+                            <div class="table-container">
+                                <table class="modern-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Word</th>
+                                            <th>Result</th>
+                                            <th>Timestamp</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dashboardHistoryTableBody">
+                                        <!-- Filled via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions & Quick Lookup -->
+                        <div class="card" style="display: flex; flex-direction: column; gap: 20px;">
+                            <div class="card-header" style="margin-bottom: 0;">
+                                <h3 class="card-title">
+                                    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
+                                    Quick Toolkit
+                                </h3>
+                            </div>
+
+                            <div class="quick-actions-grid">
+                                <button class="quick-action-btn" id="qaSearch">
+                                    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                    Find Word
+                                </button>
+                                <button class="quick-action-btn" id="qaAdd">
+                                    <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                    Add Word
+                                </button>
+                                <button class="quick-action-btn" id="qaDelete">
+                                    <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                    Delete Word
+                                </button>
+                                <button class="quick-action-btn" id="qaView">
+                                    <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    Dictionary
+                                </button>
+                            </div>
+
+                            <div style="border-top: 1px solid var(--border-color); padding-top: 16px;">
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label">Fast Search</label>
+                                    <div class="input-container">
+                                        <div class="input-icon">
+                                            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                        </div>
+                                        <input type="text" class="form-input form-input-with-icon" id="dashboardQuickSearch" placeholder="Type and hit Enter...">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- 2. SEARCH DICTIONARY PAGE -->
+                <section class="page-section" id="page-search">
+                    <div class="search-hero">
+                        <h1 class="search-title-huge">Search Dictionary</h1>
+                        <p class="search-desc">Enter a word or search query to find its definition. Autocomplete suggestions will show up automatically as you type.</p>
+                        
+                        <div class="search-box-container">
+                            <div class="search-bar-wrapper">
+                                <div class="search-input-icon">
+                                    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                </div>
+                                <input type="text" class="search-input-main" id="searchInput" placeholder="Search a word..." autocomplete="off">
+                                <button class="clear-search-btn" id="btnClearSearch" aria-label="Clear Search Input">
+                                    <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                </button>
+                                <button class="btn btn-primary" id="btnSearchSubmit">Search</button>
+                            </div>
+
+                            <!-- Autocomplete Suggestions List -->
+                            <div class="autocomplete-dropdown" id="searchSuggestionsDropdown">
+                                <!-- Filled dynamically via JS -->
+                            </div>
+                        </div>
+
+                        <!-- Spell Check Suggestions Box -->
+                        <div class="spell-check-box" id="spellCheckBox">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                            <div>
+                                <span class="spell-check-title">Word not found. Did you mean:</span>
+                                <span id="spellSuggestionsList"></span>
+                            </div>
+                        </div>
+
+                        <!-- Search Result Box -->
+                        <div class="card result-card" id="searchResultCard">
+                            <div class="result-header">
+                                <h2 class="result-word" id="resultWordName">-</h2>
+                                <span class="badge" id="resultWordStatusBadge">Found</span>
+                            </div>
+                            <div class="result-body">
+                                <h3 class="meaning-label">Meaning & Description</h3>
+                                <p class="meaning-text" id="resultWordMeaning">-</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- 3. DICTIONARY MANAGER PAGE -->
+                <section class="page-section" id="page-manager">
+                    <div class="grid-sidebar-layout">
+                        <!-- Forms Column -->
+                        <div style="display: flex; flex-direction: column; gap: 24px;">
+                            <!-- Add Word Card -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                        Insert New Word
+                                    </h3>
+                                </div>
+                                <form id="formAddWord">
+                                    <div class="form-group">
+                                        <label for="addWordInput" class="form-label">Word</label>
+                                        <input type="text" id="addWordInput" class="form-input" placeholder="e.g., algorithm" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="addWordMeaning" class="form-label">Meaning / Description</label>
+                                        <textarea id="addWordMeaning" class="form-input form-textarea" placeholder="Describe the word..." required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-full">
+                                        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                        Insert into Trie
+                                    </button>
+                                </form>
+                            </div>
+
+                            <!-- Delete Word Card -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                        Delete Word
+                                    </h3>
+                                </div>
+                                <form id="formDeleteWord">
+                                    <div class="form-group">
+                                        <label for="deleteWordInput" class="form-label">Word</label>
+                                        <input type="text" id="deleteWordInput" class="form-input" placeholder="e.g., recursive" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-danger btn-full">
+                                        <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                        Remove from Trie
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Dictionary Table Column -->
+                        <div class="card" style="display: flex; flex-direction: column; height: 100%;">
+                            <div class="card-header" style="flex-wrap: wrap; gap: 16px;">
+                                <h3 class="card-title">
+                                    <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                                    Trie Dictionary Registry
+                                </h3>
+                                <button class="btn btn-secondary btn-sm" id="btnDisplayDictionary">
+                                    <svg viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+                                    Refresh Table
+                                </button>
+                            </div>
+
+                            <!-- Search Table Form -->
+                            <div style="margin-bottom: 20px;">
+                                <div class="input-container">
+                                    <div class="input-icon">
+                                        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                    </div>
+                                    <input type="text" id="tableFilterInput" class="form-input form-input-with-icon" placeholder="Filter registry words...">
+                                </div>
+                            </div>
+
+                            <!-- Word Table -->
+                            <div class="table-container" style="flex-grow: 1; max-height: 480px; overflow-y: auto;">
+                                <table class="modern-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Word</th>
+                                            <th>Trie Status</th>
+                                            <th style="text-align: right;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dictionaryWordsTableBody">
+                                        <!-- Loaded via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- 4. SEARCH HISTORY PAGE -->
+                <section class="page-section" id="page-history">
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h3 class="card-title">
+                                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                    Audit Search Log
+                                </h3>
+                                <p class="page-subtitle" style="margin-top: 4px;">Timeline of prefix searches, spell-checks, and dictionary lookups.</p>
+                            </div>
+                            <button class="btn btn-danger btn-sm" id="btnClearHistory">
+                                <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                Clear History Log
+                            </button>
+                        </div>
+
+                        <div class="table-container">
+                            <table class="modern-table">
+                                <thead>
+                                    <tr>
+                                        <th>Search Timestamp</th>
+                                        <th>Word Queried</th>
+                                        <th>Trie Resolution</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="historyTableBody">
+                                    <!-- Filled via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- 5. STATISTICS PAGE -->
+                <section class="page-section" id="page-statistics">
+                    <!-- Stat Cards Grid repeated but with autocomplete requests -->
+                    <div class="grid-3">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                            </div>
+                            <span class="stat-value" id="statsWordsCount">-</span>
+                            <span class="stat-label">Total Dictionary Words</span>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            </div>
+                            <span class="stat-value" id="statsSearchesCount">-</span>
+                            <span class="stat-label">Total Word Searches</span>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <svg viewBox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                            </div>
+                            <span class="stat-value" id="statsAutocompleteCount">-</span>
+                            <span class="stat-label">Autocomplete Prefix Requests</span>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <!-- Chart 1: Popular Search Frequency -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                                    Most Frequently Searched Words
+                                </h3>
+                            </div>
+                            <div class="charts-container">
+                                <div class="chart-wrapper">
+                                    <canvas id="chartPopularWords"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chart 2: Status breakdown -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M8.2 12.5l2.4 2.4 5.2-5.2"></path></svg>
+                                    Search Resolution Ratio
+                                </h3>
+                            </div>
+                            <div class="charts-container">
+                                <div class="chart-wrapper">
+                                    <canvas id="chartSearchRatio"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- 6. ABOUT PAGE -->
+                <section class="page-section" id="page-about">
+                    <div class="card" style="max-width: 800px; margin: 0 auto; width: 100%;">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                                Project Specifications
+                            </h3>
+                        </div>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 24px; margin-top: 10px;">
+                            <div>
+                                <h4 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Project Name</h4>
+                                <p class="meaning-text">LexiTrie – Smart Dictionary & Autocomplete System</p>
+                            </div>
+                            
+                            <div style="border-top: 1px solid var(--border-color); padding-top: 16px;">
+                                <h4 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Technology</h4>
+                                <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px;">
+                                    <li class="meaning-text" style="display: flex; gap: 8px;">
+                                        <strong>Frontend:</strong> <span>HTML, CSS, JavaScript</span>
+                                    </li>
+                                    <li class="meaning-text" style="display: flex; gap: 8px;">
+                                        <strong>Backend Logic:</strong> <span>C++</span>
+                                    </li>
+                                    <li class="meaning-text" style="display: flex; gap: 8px;">
+                                        <strong>Data Structure:</strong> <span>Trie (Prefix Tree)</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div style="border-top: 1px solid var(--border-color); padding-top: 16px;">
+                                <h4 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Purpose</h4>
+                                <p class="meaning-text">
+                                    To provide fast word searching, autocomplete suggestions, and efficient dictionary management using the Trie data structure.
+                                </p>
+                            </div>
+
+                            <div style="border-top: 1px solid var(--border-color); padding-top: 16px; background-color: var(--bg-main); padding: 16px; border-radius: var(--border-radius-sm);">
+                                <h4 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px;">Prefix Tree (Trie) Overview</h4>
+                                <p class="meaning-text" style="font-size: 13.5px; line-height: 1.5; color: var(--text-secondary);">
+                                    A Trie, also known as a prefix tree, is an ordered tree data structure used to store an associative array where keys are usually strings. Unlike binary search trees or hash tables, the keys are not stored directly in nodes. Instead, a node's position in the tree defines the key associated with it. Searching for a string of length <strong>L</strong> takes <strong>O(L)</strong> time, making it exceptionally fast for lookups and autocomplete queries.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- CONNECTION MODAL CONFIG -->
+    <div class="modal-overlay" id="backendConfigModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title">C++ Backend API Configuration</h3>
+                <button class="modal-close-btn" id="btnCloseConfigModal" aria-label="Close Modal">
+                    <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="meaning-text" style="font-size: 14px; margin-bottom: 16px;">
+                    Configure connection options to route frontend hooks from the Sandbox simulation to a running local C++ backend.
+                </p>
+                
+                <div class="form-group">
+                    <label class="form-label" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Connector Mode</span>
+                        <span class="badge badge-success" id="badgeCurrentMode">Sandbox Simulation</span>
+                    </label>
+                    <select id="configConnectionMode" class="form-input">
+                        <option value="mock">Sandbox (In-Memory Simulation)</option>
+                        <option value="api">C++ Web REST API Connector</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="configApiUrlGroup" style="display: none;">
+                    <label for="configApiUrl" class="form-label">C++ Backend Host Address</label>
+                    <input type="text" id="configApiUrl" class="form-input" value="http://localhost:8080">
+                </div>
+
+                <button class="btn btn-primary btn-full" id="btnSaveConfig" style="margin-top: 8px;">Save Settings</button>
+
+                <div class="connection-config">
+                    <p style="font-weight: 600; margin-bottom: 4px;">Expected JSON payloads for backend:</p>
+                    <p>• <code>GET /api/autocomplete?prefix=alg</code></p>
+                    <p>• <code>GET /api/search?word=algorithm</code></p>
+                    <p>• <code>POST /api/words</code> with body <code>{word: "...", meaning: "..."}</code></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Javascript Entrypoint -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>
