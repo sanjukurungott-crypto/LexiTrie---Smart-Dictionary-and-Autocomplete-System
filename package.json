@@ -1,0 +1,21 @@
+{
+  "name": "lexitrie",
+  "version": "1.0.0",
+  "description": "LexiTrie – Smart Dictionary & Autocomplete System",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx http-server -p 3000 -c-1"
+  },
+  "keywords": [
+    "trie",
+    "prefix-tree",
+    "dictionary",
+    "autocomplete",
+    "cpp"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}
